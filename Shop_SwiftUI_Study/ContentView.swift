@@ -8,9 +8,16 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var segmentIndex = 0
+    var company = ["Nike", "Puma", "Reebok",]
+    
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        Picker(selection: $segmentIndex, label: Text(""), content: {
+            ForEach(0..<company.count) {
+                Text(company[$0]).tag($0)
+            }
+        })
+        .pickerStyle(SegmentedPickerStyle())
     }
 }
 
