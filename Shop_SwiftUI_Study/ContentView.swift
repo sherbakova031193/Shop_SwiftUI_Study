@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State var segmentIndex = 0
+    @State var offsetX = 0
     var company = ["Nike", "Puma", "Reebok"]
     var sneakers = ["nike", "puma", "reebok"]
     
@@ -17,13 +18,25 @@ struct ContentView: View {
             Text("Sneakers - \(company[segmentIndex])")
                 .font(.title)
             Spacer()
-            Image(sneakers[segmentIndex])
-                .resizable()
-                .scaledToFill()
-                .frame(width: 350, height: 400)
-                .cornerRadius(13)
-                .clipped()
-            Picker(selection: $segmentIndex, label: Text(""), content: {
+            ZStack {
+                RoundedRectangle(cornerRadius: 13)
+                    .frame(width: 350, height: 400)
+                Image(sneakers[segmentIndex])
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 350, height: 400)
+                    .cornerRadius(13)
+                    .clipped()
+            }
+            .offset(x: CGFloat(offsetX)).animation(.spring(response: 0.7, dampingFraction: 0.5, blendDuration: 0.0))
+            
+            Picker(selection: Binding(get: {
+                self.segmentIndex
+            }, set: { newValue in
+                self.segmentIndex = newValue
+                self.offsetX = -500
+                moveBack()
+            }), label: Text(""), content: {
                 ForEach(0..<company.count) {
                     Text(company[$0]).tag($0)
                 }
@@ -31,6 +44,12 @@ struct ContentView: View {
             .pickerStyle(SegmentedPickerStyle())
             .padding()
             Spacer().frame(height: 150)
+        }
+    }
+    
+    private func moveBack() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.offsetX = 0
         }
     }
 }
