@@ -11,6 +11,8 @@ struct ContentView: View {
     @State var segmentIndex = 0
     @State var offsetX = 0
     @State private var isSherePresented = false
+    @State var selection: Int?
+    @ObservedObject var userBuy = UserBuy()
     let customActivity = CustomActivity(title: "Apple", imageName: "icon") {
         print("Action Activity")
     }
@@ -19,22 +21,26 @@ struct ContentView: View {
     
     
     var body: some View {
+        NavigationView {
         VStack {
-            Text("Sneakers - \(company[segmentIndex])")
+            Text((company[segmentIndex]))
                 .font(.title)
-            Spacer()
+            Spacer().frame(height: 20)
+            Text("В корзине \(userBuy.count) шт.")
+                .font(.footnote)
             ZStack {
                 RoundedRectangle(cornerRadius: 13)
-                    .frame(width: 350, height: 400)
+                    .frame(width: 300, height: 300)
                 Image(sneakers[segmentIndex])
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 350, height: 400)
+                    .frame(width: 300, height: 300)
                     .cornerRadius(13)
                     .clipped()
             }
-            .offset(x: CGFloat(offsetX)).animation(.spring(response: 0.7, dampingFraction: 0.5, blendDuration: 0.0))
-            
+            .animation(.spring(response: 0.7, dampingFraction: 0.5, blendDuration: 0.0))
+            .offset(x: CGFloat(offsetX))
+            Spacer().frame(height: 50)
             Picker(selection: Binding(get: {
                 self.segmentIndex
             }, set: { newValue in
@@ -47,7 +53,13 @@ struct ContentView: View {
                 }
             })
             .pickerStyle(SegmentedPickerStyle())
-            Spacer().frame(height: 150)
+            Spacer().frame(height: 50)
+            NavigationLink(
+                destination: DetailView(text: company[segmentIndex]),
+                label: {
+                    Text("Show details")
+                })
+            Spacer().frame(height: 50)
             Button(action: {
                 self.isSherePresented = true
             }, label: {
@@ -56,7 +68,10 @@ struct ContentView: View {
                 ActivityView(activityItems: ["message test"], applicationActivities: [customActivity])
             })
         }
+        .navigationTitle(Text("Sneakers"))
+        }
         .padding()
+        .environmentObject(userBuy)
     }
     
     private func moveBack() {
