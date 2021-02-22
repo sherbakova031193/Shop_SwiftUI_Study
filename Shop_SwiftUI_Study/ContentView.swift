@@ -10,8 +10,13 @@ import SwiftUI
 struct ContentView: View {
     @State var segmentIndex = 0
     @State var offsetX = 0
+    @State private var isSherePresented = false
+    let customActivity = CustomActivity(title: "Apple", imageName: "icon") {
+        print("Action Activity")
+    }
     var company = ["Nike", "Puma", "Reebok"]
     var sneakers = ["nike", "puma", "reebok"]
+    
     
     var body: some View {
         VStack {
@@ -42,9 +47,16 @@ struct ContentView: View {
                 }
             })
             .pickerStyle(SegmentedPickerStyle())
-            .padding()
             Spacer().frame(height: 150)
+            Button(action: {
+                self.isSherePresented = true
+            }, label: {
+                Text("Shere")
+            }).sheet(isPresented: $isSherePresented, content: {
+                ActivityView(activityItems: ["message test"], applicationActivities: [customActivity])
+            })
         }
+        .padding()
     }
     
     private func moveBack() {
